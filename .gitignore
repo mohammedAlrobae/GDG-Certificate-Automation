@@ -39,7 +39,7 @@ Thumbs.db
 *.png
 *.jpg
 *.jpeg
-
+!gdg_icon.jpg
 !gdg_logo.png
 !gdg_background.png
 !Roboto-Bold.ttf
