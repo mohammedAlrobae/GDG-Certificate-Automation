@@ -274,8 +274,8 @@ def main():
     # ══════════════════════════════════════════════════════════
     _, logo_col, _ = st.columns([1, 1, 1])
     with logo_col:
-        if os.path.exists("gdg_logo.png"):
-            st.image("gdg_logo.png", use_container_width=True)
+        if os.path.exists("gdg_logo_ZUJ.png"):
+            st.image("gdg_logo_ZUJ.png", use_container_width=True)
 
     st.markdown(
         "<h1 style='text-align:center;margin:0.2rem 0 0.1rem;'>"
