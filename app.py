@@ -7,6 +7,7 @@ import zipfile
 import os
 import time
 import random
+import base64
 
 # ─────────────────────────────────────────────────────────────
 # Page Configuration
@@ -183,6 +184,12 @@ input { border-radius: 8px !important; }
 # ─────────────────────────────────────────────────────────────
 # Helper Functions
 # ─────────────────────────────────────────────────────────────
+def get_base64_of_bin_file(bin_file):
+    """Read a binary file and return its base64 encoding."""
+    with open(bin_file, 'rb') as f:
+        data = f.read()
+    return base64.b64encode(data).decode()
+
 def load_font(font_path: str | None, size: int) -> ImageFont.FreeTypeFont:
     """Load a TrueType font, falling back to the built-in default."""
     try:
@@ -220,7 +227,7 @@ def show_balloon_effect():
 
 
 def check_password() -> bool:
-    """Gate the app behind a regional access key stored in st.secrets."""
+    """Gate the app behind a regional access key with a clean login UI."""
     def _on_change():
         if st.session_state["password"] in st.secrets["regional_access_keys"].values():
             st.session_state["password_correct"] = True
@@ -232,20 +239,72 @@ def check_password() -> bool:
         else:
             st.session_state["password_correct"] = False
 
-    if "password_correct" not in st.session_state:
+    # Check if user is already logged in
+    if "password_correct" in st.session_state and st.session_state["password_correct"]:
+        return True
+
+    # Inject Login-Only Styles (Surgical & Overlay-Free)
+    bg_img_path = "login_background.png"
+    if os.path.exists(bg_img_path):
+        bin_str = get_base64_of_bin_file(bg_img_path)
+        bg_css = f"""
+        <style>
+        /* Apply background image */
+        .stApp {{
+            background-image: url("data:image/png;base64,{bin_str}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        /* Remove ALL white overlays and containers only for login */
+        .main, .block-container, section[data-testid="stSidebar"] {{
+            background: transparent !important;
+            background-color: transparent !important;
+        }}
+        /* Center content and fix padding */
+        .main .block-container {{
+            padding-top: 15vh !important;
+            max-width: 600px !important;
+        }}
+        /* Header styling with shadow for visibility, no box */
+        .login-header {{
+            font-size: 2.8rem !important;
+            font-weight: 900 !important;
+            color: #000000 !important;
+            text-align: center;
+            margin-bottom: 2.5rem !important;
+            line-height: 1.1;
+            text-shadow: 2px 2px 4px rgba(255,255,255,0.4);
+        }}
+        /* Input container styling */
+        .stTextInput > div {{
+            background: rgba(255, 255, 255, 0.9) !important;
+            border-radius: 12px !important;
+            border: 2px solid #000000 !important;
+            padding: 4px !important;
+        }}
+        </style>
+        """
+        st.markdown(bg_css, unsafe_allow_html=True)
+
+    # Login UI Layout
+    _, center_col, _ = st.columns([1, 4, 1])
+    with center_col:
+        st.markdown('<div class="login-header">Enter Your Regional Access Key</div>', unsafe_allow_html=True)
+        
         st.text_input(
-            "Enter Regional Access Key", type="password",
-            on_change=_on_change, key="password",
+            "Access Key", 
+            type="password",
+            on_change=_on_change, 
+            key="password",
+            label_visibility="collapsed",
+            placeholder="Type your key here..."
         )
-        return False
-    if not st.session_state["password_correct"]:
-        st.text_input(
-            "Enter Regional Access Key", type="password",
-            on_change=_on_change, key="password",
-        )
-        st.error("😕 Access Permission Denied")
-        return False
-    return True
+        
+        if "password_correct" in st.session_state and not st.session_state["password_correct"]:
+            st.error("😕 Access Permission Denied")
+
+    return False
 
 
 # ─────────────────────────────────────────────────────────────
