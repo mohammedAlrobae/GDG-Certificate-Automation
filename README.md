@@ -13,7 +13,7 @@ Generating certificates manually is a tedious task. This tool is designed to hel
 🚀 How to Use
 1️⃣ Direct Access (No Installation)
 The fastest way to use the tool. Simply click the link below and start generating:
-👉 Launch GDG Certificate Tool
+👉 https://gdg-certificate-automation.streamlit.app
 
 2️⃣ Docker (Local Container)
 For leaders who prefer running the tool locally or in an isolated environment, use our official Docker image:
