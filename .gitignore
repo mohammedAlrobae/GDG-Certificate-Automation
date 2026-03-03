@@ -41,5 +41,6 @@ Thumbs.db
 *.jpeg
 !gdg_icon.jpg
 !gdg_logo.png
-!gdg_background.png
+!gdg_logo_ZUJ.png
 !Roboto-Bold.ttf
+!login_background.png
